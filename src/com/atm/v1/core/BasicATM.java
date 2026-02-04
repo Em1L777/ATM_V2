@@ -18,33 +18,49 @@ public class BasicATM implements ICustomerActions, ITechnicianActions {
 
     @Override
     public void deposit(Account acc, double amount) {
+        // 1. Update the Customer's Account balance
         acc.balance += amount;
+
+        // 2. NEW FOR V2: Update the ATM's physical cash reserves
+        // When a user deposits cash, the amount of cash inside the machine increases.
+        bank.getAtmStatus().cash += amount;
+
+        // 3. Save both updates to the data source
         bank.saveData();
-        System.out.println("Deposited €" + amount);
+
+        System.out.println(">>> Successfully deposited $" + amount);
+        System.out.println(">>> New Account Balance: $" + acc.balance);
     }
 
     @Override
     public boolean withdraw(Account acc, double amount) {
-        // Check if customer has money AND ATM has cash
-        if (acc.balance >= amount && bank.getAtmStatus().cash >= amount) {
+        ATMStatus status = bank.getAtmStatus();
 
-            // 1. Update the Customer Account
-            acc.balance -= amount;
-
-            // 2. Update the ATM Hardware levels
-            bank.getAtmStatus().cash -= amount;
-            bank.getAtmStatus().ink -= 1;
-            bank.getAtmStatus().paper -= 1;
-
-            // 3. CRITICAL: Save these changes to the file
-            bank.saveData();
-
-            System.out.println(">>> Withdrawal Successful. Please take your cash.");
-            return true;
-        } else {
-            System.out.println(">>> Transaction Denied: Insufficient Funds or ATM empty.");
+        // Business Logic: Validate account balance
+        if (acc.balance < amount) {
+            System.out.println(">>> Transaction Denied: Insufficient personal funds.");
             return false;
         }
+
+        // Hardware Validation: Check if ATM has enough cash, ink, and paper.
+        // Critical Fix for V2: Prevent operations if hardware consumables are empty.
+        if (status.cash < amount || status.ink <= 0 || status.paper <= 0) {
+            System.out.println(">>> Transaction Denied: ATM Hardware Error.");
+            if (status.ink <= 0) System.out.println("Reason: Out of Ink.");
+            if (status.paper <= 0) System.out.println("Reason: Out of Paper.");
+            return false;
+        }
+
+        // Deduct resources after all validations pass
+        acc.balance -= amount;
+        status.cash -= amount;
+        status.ink -= 1;
+        status.paper -= 1;
+
+        // Persist changes to the data source
+        bank.saveData();
+        System.out.println(">>> Withdrawal Successful. Please take your cash.");
+        return true;
     }
 
     @Override
