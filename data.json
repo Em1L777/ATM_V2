@@ -1,11 +1,11 @@
 {
   "bank": {
     "accounts": [
-      {"card":"1111222233334444", "pin":"1234", "name":"John Doe", "balance":13300.00},
-      {"card":"0000000000000000", "pin":"1111", "name":"Mike Hoe", "balance":500.00}
+      {"card":"1111222233334444", "pin":"1234", "name":"John Doe", "balance":680.00},
+      {"card":"0000000000000000", "pin":"1111", "name":"Mike Hoe", "balance":600.00}
     ],
     "atm": {
-      "cash": 1.00, "ink": 0, "paper": 0
+      "cash": 10000.00, "ink": 103, "paper": 103
     }
   }
 }

@@ -63,7 +63,8 @@ public class MainV2 {
                 } else if (input.equals("3")) {
                     System.out.print("Enter withdrawal amount: ");
                     // Even if withdraw fails (ink/paper = 0), the loop continues
-                    atm.withdraw(acc, sc.nextDouble());
+                    double amt = sc.nextDouble();
+                    atm.withdrawWithBillSelection(acc, amt, sc);
                 } else if (input.equals("4")) {
                     System.out.print("Enter target card number: ");
                     String to = sc.next();
